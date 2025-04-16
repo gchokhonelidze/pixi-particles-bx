@@ -1,0 +1,27 @@
+{
+	"name": "@geronika2004/pixi-particles-bx",
+	"version": "1.0.0",
+	"description": "Pixijs Particles System",
+	"license": "MIT",
+	"author": "George Ch.",
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "rimraf ./dist & npx tsc --build"
+	},
+	"dependencies": {
+		"pixi.js": "^8.9.1"
+	},
+	"devDependencies": {
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
+	}
+}

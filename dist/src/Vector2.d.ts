@@ -1,0 +1,32 @@
+import { Point } from "pixi.js";
+declare class Vector2 {
+    x: number;
+    y: number;
+    constructor(x: number, y: number);
+    add(v2: Vector2): Vector2;
+    minus(v2: Vector2): Vector2;
+    mul(x: number): Vector2;
+    mulX(v: number): Vector2;
+    mulY(v: number): Vector2;
+    mulV2(v2: Vector2): Vector2;
+    static toRadians(x: number): number;
+    static fromRadians(x: number): number;
+    rotate(angle: number): Vector2;
+    rotateRadians(radians: number): Vector2;
+    angleRadians(): number;
+    angle(): number;
+    magnitude(): number;
+    normalize(): Vector2;
+    static one(): Vector2;
+    static zero(): Vector2;
+    static right(): Vector2;
+    static left(): Vector2;
+    static up(): Vector2;
+    static down(): Vector2;
+    static randomBetween: (min: Vector2, max: Vector2) => Vector2;
+    toPoint(): Point;
+    setX(x: number): this;
+    setY(y: number): this;
+    set(x: number, y: number): this;
+}
+export default Vector2;
