@@ -1,17 +1,17 @@
 {
-	"name": "@geronika2004/pixi-particles-bx",
+	"name": "@biznetx/pixi-particles-bx",
 	"version": "1.0.0",
-	"description": "Pixijs Particles System",
+	"description": "Pixijs Particle System",
 	"license": "MIT",
-	"author": "George Ch.",
+	"author": "George Chokhonelidze",
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"exports": {
 		".": {
+			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
-			"require": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"require": "./dist/index.js"
 		}
 	},
 	"scripts": {

@@ -3,7 +3,7 @@ import "pixi.js/advanced-blend-modes";
 import { Application, Assets } from "pixi.js";
 import gsap from "gsap";
 //
-import { Vector2, ParticleConfig, PixiParticles } from "@geronika2004/pixi-particles-bx";
+import { Vector2, ParticleConfig, PixiParticles } from "@biznetx/pixi-particles-bx";
 
 interface PIXI_MODULE {
 	globalThis: { __PIXI_APP__: Application };
