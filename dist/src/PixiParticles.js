@@ -9,16 +9,15 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _PixiParticles_instances, _PixiParticles_particleCreateInterval, _PixiParticles_customTicker, _PixiParticles_createParticles, _PixiParticles_ticker;
+var _PixiParticles_instances, _PixiParticles_particleCreateInterval, _PixiParticles_app, _PixiParticles_createParticles, _PixiParticles_ticker;
 import Particle from "./Particle";
 import Vector2 from "./Vector2";
 import { getGlobalRotation, interpolate, rgb2hex } from "./ParticleUtills";
-import CustomTicker from "./CustomTicker";
 class PixiParticles {
-    constructor() {
+    constructor(app) {
         _PixiParticles_instances.add(this);
         _PixiParticles_particleCreateInterval.set(this, void 0);
-        _PixiParticles_customTicker.set(this, void 0);
+        _PixiParticles_app.set(this, void 0);
         this.create = (config) => {
             __classPrivateFieldGet(this, _PixiParticles_particleCreateInterval, "f").set(config.id, setInterval(() => __classPrivateFieldGet(this, _PixiParticles_instances, "m", _PixiParticles_createParticles).call(this, config), config.duration));
             __classPrivateFieldGet(this, _PixiParticles_instances, "m", _PixiParticles_createParticles).call(this, config);
@@ -43,7 +42,7 @@ class PixiParticles {
                 }
             });
         };
-        _PixiParticles_ticker.set(this, (deltaTime) => {
+        _PixiParticles_ticker.set(this, (time) => {
             const ms = Date.now();
             for (const [cfgId, particleSet] of Particle.on)
                 for (const p of particleSet) {
@@ -75,8 +74,8 @@ class PixiParticles {
                     if (!isLocal)
                         p.sprite.rotation -= globalRotationAngle;
                     const position = isLocal ? p.sprite.position : p.globalPosition;
-                    position.x += p.velocity.x * acceleration * deltaTime;
-                    position.y += p.velocity.y * acceleration * deltaTime;
+                    position.x += p.velocity.x * acceleration * time.deltaTime;
+                    position.y += p.velocity.y * acceleration * time.deltaTime;
                     const newPosition = isLocal ? position : p.cfg.container.toLocal(position);
                     p.sprite.position.set(newPosition.x, newPosition.y);
                 }
@@ -84,12 +83,12 @@ class PixiParticles {
         if (PixiParticles.inst != null)
             return PixiParticles.inst;
         PixiParticles.inst = this;
-        __classPrivateFieldSet(this, _PixiParticles_customTicker, new CustomTicker(), "f");
-        __classPrivateFieldGet(this, _PixiParticles_customTicker, "f").add(__classPrivateFieldGet(this, _PixiParticles_ticker, "f"));
+        __classPrivateFieldSet(this, _PixiParticles_app, app, "f");
+        __classPrivateFieldGet(this, _PixiParticles_app, "f").ticker.add(__classPrivateFieldGet(this, _PixiParticles_ticker, "f"));
         __classPrivateFieldSet(this, _PixiParticles_particleCreateInterval, new Map(), "f");
     }
 }
-_PixiParticles_particleCreateInterval = new WeakMap(), _PixiParticles_customTicker = new WeakMap(), _PixiParticles_ticker = new WeakMap(), _PixiParticles_instances = new WeakSet(), _PixiParticles_createParticles = function _PixiParticles_createParticles(config) {
+_PixiParticles_particleCreateInterval = new WeakMap(), _PixiParticles_app = new WeakMap(), _PixiParticles_ticker = new WeakMap(), _PixiParticles_instances = new WeakSet(), _PixiParticles_createParticles = function _PixiParticles_createParticles(config) {
     for (let i = 0; i < config.count; i++) {
         Particle.take({ cfg: config });
     }

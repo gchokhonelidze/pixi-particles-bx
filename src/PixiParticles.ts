@@ -8,12 +8,12 @@ import CustomTicker from "./CustomTicker";
 class PixiParticles {
 	static inst: PixiParticles;
 	#particleCreateInterval: Map<string, number>;
-	#customTicker: CustomTicker;
-	constructor() {
+	#app: PIXI.Application<PIXI.Renderer>;
+	constructor(app: PIXI.Application<PIXI.Renderer>) {
 		if (PixiParticles.inst != null) return PixiParticles.inst;
 		PixiParticles.inst = this;
-		this.#customTicker = new CustomTicker();
-		this.#customTicker.add(this.#ticker);
+		this.#app = app;
+		this.#app.ticker.add(this.#ticker);
 		this.#particleCreateInterval = new Map();
 	}
 	#createParticles(config: ParticleConfig) {
@@ -47,7 +47,7 @@ class PixiParticles {
 		});
 	};
 
-	#ticker = (deltaTime: number) => {
+	#ticker = (time: PIXI.Ticker) => {
 		const ms = Date.now();
 		for (const [cfgId, particleSet] of Particle.on)
 			for (const p of particleSet) {
@@ -73,8 +73,8 @@ class PixiParticles {
 				p.sprite.rotation = Vector2.toRadians(angleVelocity + p.cfg.spriteAngle + angleOverTime);
 				if (!isLocal) p.sprite.rotation -= globalRotationAngle;
 				const position = isLocal ? p.sprite.position : p.globalPosition;
-				position.x += p.velocity.x * acceleration * deltaTime;
-				position.y += p.velocity.y * acceleration * deltaTime;
+				position.x += p.velocity.x * acceleration * time.deltaTime;
+				position.y += p.velocity.y * acceleration * time.deltaTime;
 				const newPosition = isLocal ? position : p.cfg.container.toLocal(position);
 				p.sprite.position.set(newPosition.x, newPosition.y);
 			}
