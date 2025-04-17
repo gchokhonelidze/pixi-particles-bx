@@ -28,9 +28,37 @@ export interface TCircle {
 export function IsTCircle(v: unknown): v is TCircle {
 	return typeof v === "object" && v != null && "cx" in v && "cy" in v && "radius" in v && "onlyCircumference" in v;
 }
-
+interface TParticleConfigArgs {
+	loop: boolean;
+	container: Container;
+	duration: number;
+	texture: Texture;
+	count: number;
+	lifetime: number | TMinMax<number>;
+	blendMode?: BLEND_MODES;
+	running?: boolean;
+	direction?: number | TMinMax<number> | Array<number> | Array<TMinMax<number>>;
+	alphaOverLifetime?: Array<number>;
+	size?: Vector2 | TMinMax<Vector2>;
+	scaleOverLifetime?: Array<Vector2>;
+	speed?: number;
+	accelarationOverLifetime?: Array<number>;
+	forceOverLifetime?: Array<Vector2>;
+	rotateTowardsVelocity?: boolean;
+	spriteAngle?: number;
+	angleOverLifetime?: Array<number>;
+	colorOverLifetime?: Array<string>;
+	simulation?: "world" | "local";
+	shape?: TShapeRectangle | TCircle | Vector2[];
+	childStartAfter?: number;
+	childLoopCount?: number;
+	children?: TParticleConfigChild[];
+	zIndex?: number;
+}
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation"> {}
 class ParticleConfig {
 	id: string = null!;
+	zIndex: number;
 	loop: boolean = true;
 	container: Container = null!;
 	duration: number = null!;
@@ -52,32 +80,17 @@ class ParticleConfig {
 	directions: Array<[number, number]>;
 	simulation: "world" | "local" = "world";
 	shape?: TShapeRectangle | TCircle | Vector2[];
+	childStartAfter: number = 0;
+	childLoopCount: number = 1;
+	children?: ParticleConfig[];
+	//--
 	_running: boolean = true;
-	constructor(props: {
-		loop: boolean;
-		running?: boolean;
-		container: Container;
-		duration: number;
-		texture: Texture;
-		blendMode?: BLEND_MODES;
-		count: number;
-		lifetime: number | TMinMax<number>;
-		direction?: number | TMinMax<number> | Array<number> | Array<TMinMax<number>>;
-		alphaOverLifetime?: Array<number>;
-		size?: Vector2 | TMinMax<Vector2>;
-		scaleOverLifetime?: Array<Vector2>;
-		speed?: number;
-		accelarationOverLifetime?: Array<number>;
-		forceOverLifetime?: Array<Vector2>;
-		rotateTowardsVelocity?: boolean;
-		spriteAngle?: number;
-		angleOverLifetime?: Array<number>;
-		colorOverLifetime?: Array<string>;
-		simulation?: "world" | "local";
-		shape?: TShapeRectangle | TCircle | Vector2[];
-	}) {
+	_parent?: ParticleConfig;
+	_createdAt: number;
+	constructor(props: TParticleConfigArgs | TParticleConfigChild) {
 		this.id = `cfg${(Math.random() + "").substring(2, 8)}`;
-		this.loop = props.loop;
+		this._createdAt = Date.now();
+		this.loop = "loop" in props ? props.loop : false;
 		this._running = props.running ?? true;
 		this.container = props.container;
 		this.shape = props.shape;
@@ -86,6 +99,7 @@ class ParticleConfig {
 		this.blendMode = props.blendMode;
 		this.count = props.count;
 		this.lifetime = props.lifetime;
+		this.zIndex = props.zIndex  ?? 0;
 		this.directions = [];
 		if (props.direction == null) this.directions.push([0, 359]);
 		else if (typeof props.direction === "number") this.directions.push([props.direction, props.direction]);
@@ -116,7 +130,10 @@ class ParticleConfig {
 			else if (cssColorNames[c] !== null) return cssColorNames[c];
 			else throw new Error(`invalid color type: ${c}`);
 		});
-		this.simulation = props.simulation ?? "world";
+		this.simulation = "simulation" in props ? props.simulation ?? "world" : "world";
+		this.children = "children" in props ? props.children?.map((el) => new ParticleConfig(el)) : null;
+		if ("childStartAfter" in props) this.childStartAfter = props.childStartAfter;
+		if ("childLoopCount" in props) this.childLoopCount = props.childLoopCount > 1 ? Math.ceil(props.childLoopCount) : 1;
 	}
 	_pause = () => {
 		this._running = false;

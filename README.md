@@ -23,6 +23,7 @@ This package aims to simplify particle generation and usage in your pixi project
 - Color over lifetime
 - Simulation (world or local)
 - Starting shape (point default, rectangle, circle)
+- Subemitter support (1 level only, but can hold multi children)
 - Other features will come soon
 
 ## Deployment

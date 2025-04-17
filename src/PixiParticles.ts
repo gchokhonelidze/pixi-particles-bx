@@ -1,9 +1,9 @@
 import * as PIXI from "pixi.js";
 import ParticleConfig from "./ParticleConfig";
-import Particle from "./Particle";
+import Particle, { TParticleCreationOptions } from "./Particle";
 import Vector2 from "./Vector2";
 import { getGlobalRotation, interpolate, rgb2hex } from "./ParticleUtills";
-import CustomTicker from "./CustomTicker";
+import IntervalRunner from "./IntervalRunner";
 
 class PixiParticles {
 	static inst: PixiParticles;
@@ -18,13 +18,16 @@ class PixiParticles {
 		this.#particleCreateInterval = new Map();
 		PixiParticles.#Configs = new Map();
 	}
-	#createParticles(config: ParticleConfig) {
+	#createParticles(config: ParticleConfig, particleCreationOptions?: TParticleCreationOptions) {
 		if (!config._running) return;
+		// if (particleCreationOptions != null) particleCreationOptions.cfg.childLoopCount
 		for (let i = 0; i < config.count; i++) {
-			Particle.take({ cfg: config });
+			Particle.take({ cfg: config, particleCreationOptions });
 		}
 	}
-	create = (config: ParticleConfig) => {
+	#onCreate = (config: ParticleConfig) => {
+		const isChild = config._parent != null;
+		if (PixiParticles.#Configs.has(config.id)) return;
 		PixiParticles.#Configs.set(config.id, config);
 		if (config.loop) {
 			this.#particleCreateInterval.set(
@@ -32,7 +35,15 @@ class PixiParticles {
 				setInterval(() => this.#createParticles(config), config.duration)
 			);
 		}
-		this.#createParticles(config);
+		if (!isChild) this.#createParticles(config);
+	};
+	create = (config: ParticleConfig) => {
+		this.#onCreate(config);
+		config.children?.forEach((child) => {
+			child._parent = config;
+			child._pause();
+			this.#onCreate(child);
+		});
 	};
 	once = (configId: string) => {
 		const config = PixiParticles.#Configs.get(configId);
@@ -81,7 +92,23 @@ class PixiParticles {
 			}
 		});
 	};
-
+	#createChildren = (p: Particle, particleCreationOptions: TParticleCreationOptions) => {
+		p.cfg.children.forEach((child) => {
+			child._resume();
+			this.#createParticles(child, particleCreationOptions);
+		});
+	};
+	#createChildrenInterval = (p: Particle, ms: number) => {
+		if (p._emittedChild || !(p.cfg.children?.length > 0) ) return;
+		if (ms < Math.min(p.createdAt + p.lifetime, p.createdAt + p.cfg.childStartAfter)) return;
+		p._emittedChild = true;
+		p._particleCreationOptions = null;
+		const particleCreationOptions: TParticleCreationOptions = {
+			position: Vector2.fromPoint(p.sprite.getGlobalPosition()),
+		};
+		const runner = new IntervalRunner((i) => this.#createChildren(p, particleCreationOptions), p.cfg.children[0].duration, p.cfg.childLoopCount);
+		runner.start();
+	};
 	#ticker = (time: PIXI.Ticker) => {
 		const ms = Date.now();
 		for (const [cfgId, particleSet] of Particle.on)
@@ -91,9 +118,11 @@ class PixiParticles {
 				//expire outdated:
 				const expired = ms >= expiresAt;
 				if (expired) {
+					this.#createChildrenInterval(p, ms);
 					p.retire();
 					continue;
 				}
+
 				const isLocal = p.cfg.simulation === "local";
 				const globalRotationAngle = getGlobalRotation(p.cfg.container);
 				const elapsed = ms - p.createdAt;
@@ -107,11 +136,14 @@ class PixiParticles {
 				const angleOverTime = p.cfg.angleOverLifetime == null ? 0 : interpolate(p.cfg.angleOverLifetime, tweenProgress);
 				p.sprite.rotation = Vector2.toRadians(angleVelocity + p.cfg.spriteAngle + angleOverTime);
 				if (!isLocal) p.sprite.rotation -= globalRotationAngle;
-				const position = isLocal ? p.sprite.position : p.globalPosition;
+				let position = isLocal ? new Vector2(p.sprite.position.x, p.sprite.position.y) : p.globalPosition;
 				position.x += p.velocity.x * acceleration * time.deltaTime;
 				position.y += p.velocity.y * acceleration * time.deltaTime;
 				const newPosition = isLocal ? position : p.cfg.container.toLocal(position);
 				p.sprite.position.set(newPosition.x, newPosition.y);
+
+				//create children:
+				this.#createChildrenInterval(p, ms);
 			}
 	};
 }

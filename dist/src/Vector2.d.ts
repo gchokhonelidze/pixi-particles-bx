@@ -13,6 +13,7 @@ declare class Vector2 {
     mulV2(v2: Vector2): Vector2;
     static toRadians(x: number): number;
     static fromRadians(x: number): number;
+    static fromPoint(v: Point): Vector2;
     rotate(angle: number): Vector2;
     rotateRadians(radians: number): Vector2;
     angleRadians(): number;

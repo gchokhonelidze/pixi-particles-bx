@@ -38,6 +38,9 @@ class Vector2 {
 	static fromRadians(x: number) {
 		return (x / Math.PI) * 180;
 	}
+	static fromPoint(v: Point) {
+		return new Vector2(v.x, v.y);
+	}
 	rotate(angle: number) {
 		const radians = Vector2.toRadians(angle);
 		return this.rotateRadians(radians);

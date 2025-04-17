@@ -22,6 +22,7 @@ class Particle {
         this.expiredAt = 0;
         this.size = Vector2.one();
         this.globalPosition = null;
+        this._emittedChild = false;
         this.retire = () => {
             this.expired = true;
             this.expiredAt = Date.now();
@@ -40,6 +41,7 @@ class Particle {
         sprite.label = this.id;
         sprite.anchor.set(0.5, 0.5);
         this.sprite = sprite;
+        this._particleCreationOptions = props.particleCreationOptions;
         __classPrivateFieldGet(_a, _a, "f", _Particle_onCreate).call(_a, this);
     }
 }
@@ -49,6 +51,7 @@ Particle.on = new Map();
 Particle.off = new Map();
 _Particle_onCreate = { value: (p) => {
         var _b;
+        p._emittedChild = false;
         const speed = (_b = p.cfg.speed) !== null && _b !== void 0 ? _b : 0;
         let deltaX = 0;
         let deltaY = 0;
@@ -79,12 +82,25 @@ _Particle_onCreate = { value: (p) => {
             deltaX = _point.x;
             deltaY = _point.y;
         }
-        const globalPosition = p.cfg.container.getGlobalPosition();
-        globalPosition.x += deltaX;
-        globalPosition.y += deltaY;
-        p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
-        p.sprite.x = deltaX;
-        p.sprite.y = deltaY;
+        // const parentPosition = p._parent?.sprite.position ?? new Point(0, 0);
+        // deltaX += parentPosition.x;
+        // deltaY += parentPosition.y;
+        if (p._particleCreationOptions == null) {
+            const globalPosition = p.cfg.container.getGlobalPosition();
+            globalPosition.x += deltaX;
+            globalPosition.y += deltaY;
+            p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
+            p.sprite.x = deltaX;
+            p.sprite.y = deltaY;
+        }
+        else {
+            const globalPosition = p._particleCreationOptions.position;
+            globalPosition.x += deltaX;
+            globalPosition.y += deltaY;
+            p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
+            p.sprite.x = deltaX;
+            p.sprite.y = deltaY;
+        }
         const direction = p.cfg.directions[randomBetween(0, p.cfg.directions.length - 1)];
         p.velocity = Vector2.one()
             .normalize()
@@ -97,6 +113,7 @@ _Particle_onCreate = { value: (p) => {
             p.size = p.cfg.size instanceof Vector2 ? p.cfg.size : Vector2.randomBetween(p.cfg.size.from, p.cfg.size.to);
             p.sprite.scale = p.size;
         }
+        p.sprite.zIndex = p.cfg.zIndex;
         p.cfg.container.addChild(p.sprite);
         p.expired = false;
         p.createdAt = Date.now();
@@ -115,6 +132,7 @@ Particle.take = (props) => {
         _a.on.get(p.cfg.id).add(p);
     }
     else {
+        p._particleCreationOptions = props.particleCreationOptions;
         p.revive();
     }
     return p;

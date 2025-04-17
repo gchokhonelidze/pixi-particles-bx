@@ -1,6 +1,6 @@
 import ParticleConfig, { IsTCircle, IsTShapeRectangle } from "./ParticleConfig";
 import Vector2, { IsVector2Array } from "./Vector2";
-import { Sprite } from "pixi.js";
+import { Point, Sprite } from "pixi.js";
 import {
 	arrayFirstOrDefault,
 	getRandomPointInCircle,
@@ -9,9 +9,12 @@ import {
 	getRandomPointOnRectangleEdge,
 	randomBetween,
 } from "./ParticleUtills";
-
+export interface TParticleCreationOptions {
+	position: Vector2;
+}
 interface TParticle {
 	cfg: ParticleConfig;
+	particleCreationOptions?: TParticleCreationOptions;
 }
 class Particle {
 	id: string = null!;
@@ -25,6 +28,8 @@ class Particle {
 	expiredAt: number = 0;
 	size: Vector2 = Vector2.one();
 	globalPosition: Vector2 = null!;
+	_particleCreationOptions?: TParticleCreationOptions;
+	_emittedChild: boolean = false;
 
 	//pooling:
 	static on: Map<string, Set<Particle>> = new Map();
@@ -38,9 +43,11 @@ class Particle {
 		sprite.label = this.id;
 		sprite.anchor.set(0.5, 0.5);
 		this.sprite = sprite;
+		this._particleCreationOptions = props.particleCreationOptions;
 		Particle.#onCreate(this);
 	}
 	static #onCreate = (p: Particle) => {
+		p._emittedChild = false;
 		const speed = p.cfg.speed ?? 0;
 		let deltaX = 0;
 		let deltaY = 0;
@@ -70,13 +77,26 @@ class Particle {
 			deltaX = _point.x;
 			deltaY = _point.y;
 		}
-		const globalPosition = p.cfg.container.getGlobalPosition();
-		globalPosition.x += deltaX;
-		globalPosition.y += deltaY;
+		// const parentPosition = p._parent?.sprite.position ?? new Point(0, 0);
+		// deltaX += parentPosition.x;
+		// deltaY += parentPosition.y;
 
-		p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
-		p.sprite.x = deltaX;
-		p.sprite.y = deltaY;
+		if (p._particleCreationOptions == null) {
+			const globalPosition = p.cfg.container.getGlobalPosition();
+			globalPosition.x += deltaX;
+			globalPosition.y += deltaY;
+			p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
+			p.sprite.x = deltaX;
+			p.sprite.y = deltaY;
+		} else {
+			const globalPosition = p._particleCreationOptions.position;
+			globalPosition.x += deltaX;
+			globalPosition.y += deltaY;
+			p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
+			p.sprite.x = deltaX;
+			p.sprite.y = deltaY;
+		}
+
 		const direction = p.cfg.directions[randomBetween(0, p.cfg.directions.length - 1)];
 		p.velocity = Vector2.one()
 			.normalize()
@@ -88,6 +108,7 @@ class Particle {
 			p.size = p.cfg.size instanceof Vector2 ? p.cfg.size : Vector2.randomBetween(p.cfg.size.from, p.cfg.size.to);
 			p.sprite.scale = p.size;
 		}
+		p.sprite.zIndex = p.cfg.zIndex;
 		p.cfg.container.addChild(p.sprite);
 		p.expired = false;
 		p.createdAt = Date.now();
@@ -116,6 +137,7 @@ class Particle {
 			}
 			Particle.on.get(p.cfg.id).add(p);
 		} else {
+			p._particleCreationOptions = props.particleCreationOptions;
 			p.revive();
 		}
 		return p;

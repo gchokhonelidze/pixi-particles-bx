@@ -1,8 +1,12 @@
 import ParticleConfig from "./ParticleConfig";
 import Vector2 from "./Vector2";
 import { Sprite } from "pixi.js";
+export interface TParticleCreationOptions {
+    position: Vector2;
+}
 interface TParticle {
     cfg: ParticleConfig;
+    particleCreationOptions?: TParticleCreationOptions;
 }
 declare class Particle {
     #private;
@@ -17,6 +21,8 @@ declare class Particle {
     expiredAt: number;
     size: Vector2;
     globalPosition: Vector2;
+    _particleCreationOptions?: TParticleCreationOptions;
+    _emittedChild: boolean;
     static on: Map<string, Set<Particle>>;
     static off: Map<string, Set<Particle>>;
     constructor(props: TParticle);

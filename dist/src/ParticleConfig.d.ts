@@ -19,8 +19,38 @@ export interface TCircle {
     onlyCircumference: boolean;
 }
 export declare function IsTCircle(v: unknown): v is TCircle;
+interface TParticleConfigArgs {
+    loop: boolean;
+    container: Container;
+    duration: number;
+    texture: Texture;
+    count: number;
+    lifetime: number | TMinMax<number>;
+    blendMode?: BLEND_MODES;
+    running?: boolean;
+    direction?: number | TMinMax<number> | Array<number> | Array<TMinMax<number>>;
+    alphaOverLifetime?: Array<number>;
+    size?: Vector2 | TMinMax<Vector2>;
+    scaleOverLifetime?: Array<Vector2>;
+    speed?: number;
+    accelarationOverLifetime?: Array<number>;
+    forceOverLifetime?: Array<Vector2>;
+    rotateTowardsVelocity?: boolean;
+    spriteAngle?: number;
+    angleOverLifetime?: Array<number>;
+    colorOverLifetime?: Array<string>;
+    simulation?: "world" | "local";
+    shape?: TShapeRectangle | TCircle | Vector2[];
+    childStartAfter?: number;
+    childLoopCount?: number;
+    children?: TParticleConfigChild[];
+    zIndex?: number;
+}
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation"> {
+}
 declare class ParticleConfig {
     id: string;
+    zIndex: number;
     loop: boolean;
     container: Container;
     duration: number;
@@ -42,30 +72,13 @@ declare class ParticleConfig {
     directions: Array<[number, number]>;
     simulation: "world" | "local";
     shape?: TShapeRectangle | TCircle | Vector2[];
+    childStartAfter: number;
+    childLoopCount: number;
+    children?: ParticleConfig[];
     _running: boolean;
-    constructor(props: {
-        loop: boolean;
-        running?: boolean;
-        container: Container;
-        duration: number;
-        texture: Texture;
-        blendMode?: BLEND_MODES;
-        count: number;
-        lifetime: number | TMinMax<number>;
-        direction?: number | TMinMax<number> | Array<number> | Array<TMinMax<number>>;
-        alphaOverLifetime?: Array<number>;
-        size?: Vector2 | TMinMax<Vector2>;
-        scaleOverLifetime?: Array<Vector2>;
-        speed?: number;
-        accelarationOverLifetime?: Array<number>;
-        forceOverLifetime?: Array<Vector2>;
-        rotateTowardsVelocity?: boolean;
-        spriteAngle?: number;
-        angleOverLifetime?: Array<number>;
-        colorOverLifetime?: Array<string>;
-        simulation?: "world" | "local";
-        shape?: TShapeRectangle | TCircle | Vector2[];
-    });
+    _parent?: ParticleConfig;
+    _createdAt: number;
+    constructor(props: TParticleConfigArgs | TParticleConfigChild);
     _pause: () => void;
     _resume: () => void;
 }
