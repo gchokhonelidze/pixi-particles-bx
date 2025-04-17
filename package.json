@@ -4,6 +4,13 @@
 	"description": "Pixijs Particle System",
 	"license": "MIT",
 	"author": "George Chokhonelidze",
+	"keywords": [
+		"pixijs",
+		"particles",
+		"pixi",
+		"effects",
+		"particle"
+	],
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
