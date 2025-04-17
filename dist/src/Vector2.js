@@ -1,4 +1,10 @@
 import { Point } from "pixi.js";
+export function IsVector2(o) {
+    return typeof o === "object" && o != null && "x" in o && "y" in o;
+}
+export function IsVector2Array(o) {
+    return Array.isArray(o) && o.length > 0 && IsVector2(o[0]);
+}
 class Vector2 {
     constructor(x, y) {
         this.x = 0;

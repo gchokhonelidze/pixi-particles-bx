@@ -40,7 +40,7 @@ declare class ParticleConfig {
     colorOverLifetime?: Array<[number, number, number]>;
     directions: Array<[number, number]>;
     simulation: "world" | "local";
-    shape?: TShapeRectangle | TCircle;
+    shape?: TShapeRectangle | TCircle | Vector2[];
     constructor(props: {
         container: Container;
         duration: number;
@@ -60,7 +60,7 @@ declare class ParticleConfig {
         angleOverLifetime?: Array<number>;
         colorOverLifetime?: Array<string>;
         simulation?: "world" | "local";
-        shape?: TShapeRectangle | TCircle;
+        shape?: TShapeRectangle | TCircle | Vector2[];
     });
 }
 export default ParticleConfig;

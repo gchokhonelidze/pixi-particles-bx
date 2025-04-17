@@ -50,7 +50,7 @@ class ParticleConfig {
 	colorOverLifetime?: Array<[number, number, number]>;
 	directions: Array<[number, number]>;
 	simulation: "world" | "local" = "world";
-	shape?: TShapeRectangle | TCircle;
+	shape?: TShapeRectangle | TCircle | Vector2[];
 	constructor(props: {
 		container: Container;
 		duration: number;
@@ -70,7 +70,7 @@ class ParticleConfig {
 		angleOverLifetime?: Array<number>;
 		colorOverLifetime?: Array<string>;
 		simulation?: "world" | "local";
-		shape?: TShapeRectangle | TCircle;
+		shape?: TShapeRectangle | TCircle | Vector2[];
 	}) {
 		this.id = `cfg${(Math.random() + "").substring(2, 8)}`;
 		this.container = props.container;

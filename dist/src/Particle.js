@@ -5,9 +5,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _a, _Particle_onCreate;
 import { IsTCircle, IsTShapeRectangle } from "./ParticleConfig";
-import Vector2 from "./Vector2";
+import Vector2, { IsVector2Array } from "./Vector2";
 import { Sprite } from "pixi.js";
-import { arrayFirstOrDefault, getRandomPointInCircle, getRandomPointOnCircumference, getRandomPointOnRectangleEdge, randomBetween, } from "./ParticleUtills";
+import { arrayFirstOrDefault, getRandomPointInCircle, getRandomPointInPolygon, getRandomPointOnCircumference, getRandomPointOnRectangleEdge, randomBetween, } from "./ParticleUtills";
 class Particle {
     //---
     constructor(props) {
@@ -71,6 +71,11 @@ _Particle_onCreate = { value: (p) => {
             else {
                 _point = getRandomPointInCircle(p.cfg.shape.cx, p.cfg.shape.cy, p.cfg.shape.radius);
             }
+            deltaX = _point.x;
+            deltaY = _point.y;
+        }
+        else if (Array.isArray(p.cfg.shape) && IsVector2Array(p.cfg.shape)) {
+            const _point = getRandomPointInPolygon(p.cfg.shape);
             deltaX = _point.x;
             deltaY = _point.y;
         }

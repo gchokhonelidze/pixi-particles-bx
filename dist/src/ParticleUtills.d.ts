@@ -1,4 +1,5 @@
 import { Container } from "pixi.js";
+import Vector2 from "./Vector2";
 export declare const randomBetween: (min: number, max: number) => number;
 export declare const getGlobalRotation: (c: Container) => number;
 export declare const cssColorNames: Record<string, [number, number, number]>;
@@ -20,3 +21,7 @@ export declare function getRandomPointOnRectangleEdge(x: number, y: number, widt
     x: number;
     y: number;
 };
+/**
+ * Generate a random point inside a closed polygon shape
+ */
+export declare function getRandomPointInPolygon(polygon: Vector2[]): Vector2;

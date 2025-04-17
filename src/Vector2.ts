@@ -1,5 +1,12 @@
 import { Point } from "pixi.js";
 
+export function IsVector2(o: unknown): o is Vector2 {
+	return typeof o === "object" && o != null && "x" in o && "y" in o;
+}
+export function IsVector2Array(o: unknown): o is Vector2[] {
+	return Array.isArray(o) && o.length > 0 && IsVector2(o[0]);
+}
+
 class Vector2 {
 	x: number = 0;
 	y: number = 0;
@@ -96,4 +103,5 @@ class Vector2 {
 		return this;
 	}
 }
+
 export default Vector2;

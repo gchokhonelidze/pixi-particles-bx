@@ -1,4 +1,6 @@
 import { Point } from "pixi.js";
+export declare function IsVector2(o: unknown): o is Vector2;
+export declare function IsVector2Array(o: unknown): o is Vector2[];
 declare class Vector2 {
     x: number;
     y: number;

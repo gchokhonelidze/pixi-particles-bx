@@ -1,9 +1,10 @@
 import ParticleConfig, { IsTCircle, IsTShapeRectangle } from "./ParticleConfig";
-import Vector2 from "./Vector2";
+import Vector2, { IsVector2Array } from "./Vector2";
 import { Sprite } from "pixi.js";
 import {
 	arrayFirstOrDefault,
 	getRandomPointInCircle,
+	getRandomPointInPolygon,
 	getRandomPointOnCircumference,
 	getRandomPointOnRectangleEdge,
 	randomBetween,
@@ -62,6 +63,10 @@ class Particle {
 			} else {
 				_point = getRandomPointInCircle(p.cfg.shape.cx, p.cfg.shape.cy, p.cfg.shape.radius);
 			}
+			deltaX = _point.x;
+			deltaY = _point.y;
+		} else if (Array.isArray(p.cfg.shape) && IsVector2Array(p.cfg.shape)) {
+			const _point = getRandomPointInPolygon(p.cfg.shape);
 			deltaX = _point.x;
 			deltaY = _point.y;
 		}

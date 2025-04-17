@@ -256,3 +256,55 @@ export function getRandomPointOnRectangleEdge(x: number, y: number, width: numbe
 		return { x, y: y + (perimeter - edgePoint) };
 	}
 }
+/**
+ * Calculate the area of a triangle using the shoelace formula
+ */
+function triangleArea(a: Vector2, b: Vector2, c: Vector2): number {
+	return Math.abs((a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2);
+}
+
+/**
+ * Generate a random point inside a triangle using barycentric coordinates
+ */
+function randomPointInTriangle(a: Vector2, b: Vector2, c: Vector2): Vector2 {
+	let r1 = Math.random();
+	let r2 = Math.random();
+	if (r1 + r2 > 1) {
+		r1 = 1 - r1;
+		r2 = 1 - r2;
+	}
+	const x = a.x + r1 * (b.x - a.x) + r2 * (c.x - a.x);
+	const y = a.y + r1 * (b.y - a.y) + r2 * (c.y - a.y);
+	return new Vector2(x, y);
+}
+
+/**
+ * Triangulate the polygon (assumes the polygon is simple and convex)
+ */
+function triangulatePolygon(vertices: Vector2[]): [Vector2, Vector2, Vector2][] {
+	const triangles: [Vector2, Vector2, Vector2][] = [];
+	for (let i = 1; i < vertices.length - 1; i++) {
+		triangles.push([vertices[0], vertices[i], vertices[i + 1]]);
+	}
+	return triangles;
+}
+
+/**
+ * Generate a random point inside a closed polygon shape
+ */
+export function getRandomPointInPolygon(polygon: Vector2[]): Vector2 {
+	const triangles = triangulatePolygon(polygon);
+	const areas = triangles.map(([a, b, c]) => triangleArea(a, b, c));
+	const totalArea = areas.reduce((sum, area) => sum + area, 0);
+
+	let pick = Math.random() * totalArea;
+	for (let i = 0; i < triangles.length; i++) {
+		if (pick < areas[i]) {
+			const [a, b, c] = triangles[i];
+			return randomPointInTriangle(a, b, c);
+		}
+		pick -= areas[i];
+	}
+	// Fallback (should never hit)
+	return new Vector2(0, 0);
+}
