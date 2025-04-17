@@ -51,6 +51,7 @@ class ParticleConfig {
 	directions: Array<[number, number]>;
 	simulation: "world" | "local" = "world";
 	shape?: TShapeRectangle | TCircle | Vector2[];
+	_running: boolean = true;
 	constructor(props: {
 		container: Container;
 		duration: number;
@@ -112,5 +113,11 @@ class ParticleConfig {
 		});
 		this.simulation = props.simulation ?? "world";
 	}
+	_pause = () => {
+		this._running = false;
+	};
+	_resume = () => {
+		this._running = true;
+	};
 }
 export default ParticleConfig;

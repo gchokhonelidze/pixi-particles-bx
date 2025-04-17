@@ -7,6 +7,7 @@ import CustomTicker from "./CustomTicker";
 
 class PixiParticles {
 	static inst: PixiParticles;
+	static #Configs: Map<string, ParticleConfig>;
 	#particleCreateInterval: Map<string, number>;
 	#app: PIXI.Application<PIXI.Renderer>;
 	constructor(app: PIXI.Application<PIXI.Renderer>) {
@@ -15,21 +16,47 @@ class PixiParticles {
 		this.#app = app;
 		this.#app.ticker.add(this.#ticker);
 		this.#particleCreateInterval = new Map();
+		PixiParticles.#Configs = new Map();
 	}
 	#createParticles(config: ParticleConfig) {
+		if (!config._running) return;
 		for (let i = 0; i < config.count; i++) {
 			Particle.take({ cfg: config });
 		}
 	}
 	create = (config: ParticleConfig) => {
+		PixiParticles.#Configs.set(config.id, config);
 		this.#particleCreateInterval.set(
 			config.id,
 			setInterval(() => this.#createParticles(config), config.duration)
 		);
 		this.#createParticles(config);
 	};
+	pause = (configId: string) => {
+		const config = PixiParticles.#Configs.get(configId);
+		if (config == null) return;
+		config._pause();
+		return config;
+	};
+	resume = (configId: string) => {
+		const config = PixiParticles.#Configs.get(configId);
+		if (config == null) return;
+		config._resume();
+		return config;
+	};
+	toggle = (configId: string) => {
+		const config = PixiParticles.#Configs.get(configId);
+		if (config == null) return;
+		return config._running ? this.pause(configId) : this.resume(configId);
+	};
+	isRunning = (configId: string) => {
+		const config = PixiParticles.#Configs.get(configId);
+		if (config == null) return;
+		return config._running;
+	};
 
 	destroy = (configId: string) => {
+		PixiParticles.#Configs.delete(configId);
 		const interval = this.#particleCreateInterval.get(configId);
 		if (interval == null) return;
 		clearInterval(interval);

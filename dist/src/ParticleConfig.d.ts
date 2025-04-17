@@ -41,6 +41,7 @@ declare class ParticleConfig {
     directions: Array<[number, number]>;
     simulation: "world" | "local";
     shape?: TShapeRectangle | TCircle | Vector2[];
+    _running: boolean;
     constructor(props: {
         container: Container;
         duration: number;
@@ -62,5 +63,7 @@ declare class ParticleConfig {
         simulation?: "world" | "local";
         shape?: TShapeRectangle | TCircle | Vector2[];
     });
+    _pause: () => void;
+    _resume: () => void;
 }
 export default ParticleConfig;

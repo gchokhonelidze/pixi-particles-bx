@@ -20,6 +20,13 @@ class ParticleConfig {
         this.rotateTowardsVelocity = false;
         this.spriteAngle = 0;
         this.simulation = "world";
+        this._running = true;
+        this._pause = () => {
+            this._running = false;
+        };
+        this._resume = () => {
+            this._running = true;
+        };
         this.id = `cfg${(Math.random() + "").substring(2, 8)}`;
         this.container = props.container;
         this.shape = props.shape;
