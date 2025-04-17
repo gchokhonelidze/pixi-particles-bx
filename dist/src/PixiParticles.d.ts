@@ -5,6 +5,7 @@ declare class PixiParticles {
     static inst: PixiParticles;
     constructor(app: PIXI.Application<PIXI.Renderer>);
     create: (config: ParticleConfig) => void;
+    once: (configId: string) => void;
     pause: (configId: string) => ParticleConfig;
     resume: (configId: string) => ParticleConfig;
     toggle: (configId: string) => ParticleConfig;

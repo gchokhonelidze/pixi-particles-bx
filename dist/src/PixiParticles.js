@@ -20,26 +20,35 @@ class PixiParticles {
         _PixiParticles_app.set(this, void 0);
         this.create = (config) => {
             __classPrivateFieldGet(_a, _a, "f", _PixiParticles_Configs).set(config.id, config);
-            __classPrivateFieldGet(this, _PixiParticles_particleCreateInterval, "f").set(config.id, setInterval(() => __classPrivateFieldGet(this, _PixiParticles_instances, "m", _PixiParticles_createParticles).call(this, config), config.duration));
+            if (config.loop) {
+                __classPrivateFieldGet(this, _PixiParticles_particleCreateInterval, "f").set(config.id, setInterval(() => __classPrivateFieldGet(this, _PixiParticles_instances, "m", _PixiParticles_createParticles).call(this, config), config.duration));
+            }
+            __classPrivateFieldGet(this, _PixiParticles_instances, "m", _PixiParticles_createParticles).call(this, config);
+        };
+        this.once = (configId) => {
+            const config = __classPrivateFieldGet(_a, _a, "f", _PixiParticles_Configs).get(configId);
+            if (config == null || config.loop)
+                return;
+            config._resume();
             __classPrivateFieldGet(this, _PixiParticles_instances, "m", _PixiParticles_createParticles).call(this, config);
         };
         this.pause = (configId) => {
             const config = __classPrivateFieldGet(_a, _a, "f", _PixiParticles_Configs).get(configId);
-            if (config == null)
+            if (config == null || !config.loop)
                 return;
             config._pause();
             return config;
         };
         this.resume = (configId) => {
             const config = __classPrivateFieldGet(_a, _a, "f", _PixiParticles_Configs).get(configId);
-            if (config == null)
+            if (config == null || !config.loop)
                 return;
             config._resume();
             return config;
         };
         this.toggle = (configId) => {
             const config = __classPrivateFieldGet(_a, _a, "f", _PixiParticles_Configs).get(configId);
-            if (config == null)
+            if (config == null || !config.loop)
                 return;
             return config._running ? this.pause(configId) : this.resume(configId);
         };

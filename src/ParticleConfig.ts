@@ -31,6 +31,7 @@ export function IsTCircle(v: unknown): v is TCircle {
 
 class ParticleConfig {
 	id: string = null!;
+	loop: boolean = true;
 	container: Container = null!;
 	duration: number = null!;
 	texture: Texture = null!;
@@ -53,6 +54,8 @@ class ParticleConfig {
 	shape?: TShapeRectangle | TCircle | Vector2[];
 	_running: boolean = true;
 	constructor(props: {
+		loop: boolean;
+		running?: boolean;
 		container: Container;
 		duration: number;
 		texture: Texture;
@@ -74,6 +77,8 @@ class ParticleConfig {
 		shape?: TShapeRectangle | TCircle | Vector2[];
 	}) {
 		this.id = `cfg${(Math.random() + "").substring(2, 8)}`;
+		this.loop = props.loop;
+		this._running = props.running ?? true;
 		this.container = props.container;
 		this.shape = props.shape;
 		this.duration = props.duration;

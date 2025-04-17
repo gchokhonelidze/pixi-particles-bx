@@ -21,6 +21,7 @@ export interface TCircle {
 export declare function IsTCircle(v: unknown): v is TCircle;
 declare class ParticleConfig {
     id: string;
+    loop: boolean;
     container: Container;
     duration: number;
     texture: Texture;
@@ -43,6 +44,8 @@ declare class ParticleConfig {
     shape?: TShapeRectangle | TCircle | Vector2[];
     _running: boolean;
     constructor(props: {
+        loop: boolean;
+        running?: boolean;
         container: Container;
         duration: number;
         texture: Texture;

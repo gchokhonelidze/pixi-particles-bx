@@ -26,27 +26,35 @@ class PixiParticles {
 	}
 	create = (config: ParticleConfig) => {
 		PixiParticles.#Configs.set(config.id, config);
-		this.#particleCreateInterval.set(
-			config.id,
-			setInterval(() => this.#createParticles(config), config.duration)
-		);
+		if (config.loop) {
+			this.#particleCreateInterval.set(
+				config.id,
+				setInterval(() => this.#createParticles(config), config.duration)
+			);
+		}
+		this.#createParticles(config);
+	};
+	once = (configId: string) => {
+		const config = PixiParticles.#Configs.get(configId);
+		if (config == null || config.loop) return;
+		config._resume();
 		this.#createParticles(config);
 	};
 	pause = (configId: string) => {
 		const config = PixiParticles.#Configs.get(configId);
-		if (config == null) return;
+		if (config == null || !config.loop) return;
 		config._pause();
 		return config;
 	};
 	resume = (configId: string) => {
 		const config = PixiParticles.#Configs.get(configId);
-		if (config == null) return;
+		if (config == null || !config.loop) return;
 		config._resume();
 		return config;
 	};
 	toggle = (configId: string) => {
 		const config = PixiParticles.#Configs.get(configId);
-		if (config == null) return;
+		if (config == null || !config.loop) return;
 		return config._running ? this.pause(configId) : this.resume(configId);
 	};
 	isRunning = (configId: string) => {

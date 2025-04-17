@@ -10,8 +10,9 @@ export function IsTCircle(v) {
 }
 class ParticleConfig {
     constructor(props) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         this.id = null;
+        this.loop = true;
         this.container = null;
         this.duration = null;
         this.texture = null;
@@ -28,6 +29,8 @@ class ParticleConfig {
             this._running = true;
         };
         this.id = `cfg${(Math.random() + "").substring(2, 8)}`;
+        this.loop = props.loop;
+        this._running = (_a = props.running) !== null && _a !== void 0 ? _a : true;
         this.container = props.container;
         this.shape = props.shape;
         this.duration = props.duration;
@@ -58,10 +61,10 @@ class ParticleConfig {
         this.speed = props.speed;
         this.accelarationOverLifetime = props.accelarationOverLifetime;
         this.forceOverLifetime = props.forceOverLifetime;
-        this.rotateTowardsVelocity = (_a = props.rotateTowardsVelocity) !== null && _a !== void 0 ? _a : false;
-        this.spriteAngle = (_b = props.spriteAngle) !== null && _b !== void 0 ? _b : 0;
+        this.rotateTowardsVelocity = (_b = props.rotateTowardsVelocity) !== null && _b !== void 0 ? _b : false;
+        this.spriteAngle = (_c = props.spriteAngle) !== null && _c !== void 0 ? _c : 0;
         this.angleOverLifetime = props.angleOverLifetime;
-        this.colorOverLifetime = (_c = props.colorOverLifetime) === null || _c === void 0 ? void 0 : _c.map((c) => {
+        this.colorOverLifetime = (_d = props.colorOverLifetime) === null || _d === void 0 ? void 0 : _d.map((c) => {
             c = c.toLowerCase();
             if (c.startsWith("rgb"))
                 return rgbStringToRgb(c);
@@ -72,7 +75,7 @@ class ParticleConfig {
             else
                 throw new Error(`invalid color type: ${c}`);
         });
-        this.simulation = (_d = props.simulation) !== null && _d !== void 0 ? _d : "world";
+        this.simulation = (_e = props.simulation) !== null && _e !== void 0 ? _e : "world";
     }
 }
 export default ParticleConfig;
