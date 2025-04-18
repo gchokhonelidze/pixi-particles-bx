@@ -52,6 +52,8 @@ interface TParticleConfigArgs {
 	shape?: TShapeRectangle | TCircle | Vector2[];
 	childStartAfter?: number;
 	childLoopCount?: number;
+	childRunEvery?: number;
+	childRunEveryCount?: number;
 	children?: TParticleConfigChild[];
 	zIndex?: number;
 }
@@ -82,6 +84,8 @@ class ParticleConfig {
 	shape?: TShapeRectangle | TCircle | Vector2[];
 	childStartAfter: number = 0;
 	childLoopCount: number = 1;
+	childRunEvery: number = 0;
+	childRunEveryCount: number = 1;
 	children?: ParticleConfig[];
 	//--
 	_running: boolean = true;
@@ -132,8 +136,10 @@ class ParticleConfig {
 		});
 		this.simulation = "simulation" in props ? props.simulation ?? "world" : "world";
 		this.children = "children" in props ? props.children?.map((el) => new ParticleConfig(el)) : null;
-		if ("childStartAfter" in props) this.childStartAfter = props.childStartAfter;
-		if ("childLoopCount" in props) this.childLoopCount = props.childLoopCount > 1 ? Math.ceil(props.childLoopCount) : 1;
+		this.childStartAfter = props.childStartAfter;
+		this.childLoopCount = props.childLoopCount > 1 ? Math.ceil(props.childLoopCount) : 1;
+		this.childRunEvery = props.childRunEvery > 0 ? Math.ceil(props.childRunEvery) : 0;
+		this.childRunEveryCount = props.childRunEveryCount > 0 ? Math.ceil(props.childRunEveryCount) : 1;
 	}
 	_pause = () => {
 		this._running = false;

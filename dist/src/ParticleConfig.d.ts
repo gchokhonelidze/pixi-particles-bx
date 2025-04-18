@@ -43,6 +43,8 @@ interface TParticleConfigArgs {
     shape?: TShapeRectangle | TCircle | Vector2[];
     childStartAfter?: number;
     childLoopCount?: number;
+    childRunEvery?: number;
+    childRunEveryCount?: number;
     children?: TParticleConfigChild[];
     zIndex?: number;
 }
@@ -74,6 +76,8 @@ declare class ParticleConfig {
     shape?: TShapeRectangle | TCircle | Vector2[];
     childStartAfter: number;
     childLoopCount: number;
+    childRunEvery: number;
+    childRunEveryCount: number;
     children?: ParticleConfig[];
     _running: boolean;
     _parent?: ParticleConfig;

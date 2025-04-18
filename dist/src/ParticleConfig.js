@@ -23,6 +23,8 @@ class ParticleConfig {
         this.simulation = "world";
         this.childStartAfter = 0;
         this.childLoopCount = 1;
+        this.childRunEvery = 0;
+        this.childRunEveryCount = 1;
         //--
         this._running = true;
         this._pause = () => {
@@ -82,10 +84,10 @@ class ParticleConfig {
         });
         this.simulation = "simulation" in props ? (_f = props.simulation) !== null && _f !== void 0 ? _f : "world" : "world";
         this.children = "children" in props ? (_g = props.children) === null || _g === void 0 ? void 0 : _g.map((el) => new ParticleConfig(el)) : null;
-        if ("childStartAfter" in props)
-            this.childStartAfter = props.childStartAfter;
-        if ("childLoopCount" in props)
-            this.childLoopCount = props.childLoopCount > 1 ? Math.ceil(props.childLoopCount) : 1;
+        this.childStartAfter = props.childStartAfter;
+        this.childLoopCount = props.childLoopCount > 1 ? Math.ceil(props.childLoopCount) : 1;
+        this.childRunEvery = props.childRunEvery > 0 ? Math.ceil(props.childRunEvery) : 0;
+        this.childRunEveryCount = props.childRunEveryCount > 0 ? Math.ceil(props.childRunEveryCount) : 1;
     }
 }
 export default ParticleConfig;

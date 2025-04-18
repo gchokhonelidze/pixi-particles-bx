@@ -6,7 +6,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _a, _Particle_onCreate;
 import { IsTCircle, IsTShapeRectangle } from "./ParticleConfig";
 import Vector2, { IsVector2Array } from "./Vector2";
-import { Sprite } from "pixi.js";
+import { Point, Sprite } from "pixi.js";
 import { arrayFirstOrDefault, getRandomPointInCircle, getRandomPointInPolygon, getRandomPointOnCircumference, getRandomPointOnRectangleEdge, randomBetween, } from "./ParticleUtills";
 class Particle {
     //---
@@ -28,7 +28,9 @@ class Particle {
             this.expiredAt = Date.now();
             _a.on.get(this.cfg.id).delete(this);
             this.sprite.removeFromParent();
-            _a.off.get(this.cfg.id).add(this);
+            requestAnimationFrame(() => {
+                _a.off.get(this.cfg.id).add(this);
+            });
         };
         this.revive = () => {
             _a.off.get(this.cfg.id).delete(this);
@@ -86,7 +88,8 @@ _Particle_onCreate = { value: (p) => {
         // deltaX += parentPosition.x;
         // deltaY += parentPosition.y;
         if (p._particleCreationOptions == null) {
-            const globalPosition = p.cfg.container.getGlobalPosition();
+            const _point = new Point();
+            const globalPosition = p.cfg.container.getGlobalPosition(_point, false);
             globalPosition.x += deltaX;
             globalPosition.y += deltaY;
             p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);

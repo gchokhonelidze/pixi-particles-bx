@@ -92,13 +92,16 @@ class PixiParticles {
 			}
 		});
 	};
-	#createChildrenInterval = (p: Particle, ms: number) => {
-		if (p._emittedChild || !(p.cfg.children?.length > 0)) return;
-		if (ms < Math.min(p.createdAt + p.lifetime, p.createdAt + p.cfg.childStartAfter)) return;
-		p._emittedChild = true;
+	#childEveryInterval = (p: Particle, ref: { runner?: IntervalRunner }) => {
 		p._particleCreationOptions = null;
+		const globalPosition = new PIXI.Point();
+		if (p.expired) {
+			ref.runner?.stop();
+			return;
+		}
+		p.sprite.getGlobalPosition(globalPosition, false);
 		const particleCreationOptions: TParticleCreationOptions = {
-			position: Vector2.fromPoint(p.sprite.getGlobalPosition()),
+			position: Vector2.fromPoint(globalPosition),
 			container: p.cfg.container,
 		};
 		p.cfg.children.forEach((child) => {
@@ -106,6 +109,14 @@ class PixiParticles {
 			const runner = new IntervalRunner((i) => this.#createParticles(child, particleCreationOptions), child.duration, p.cfg.childLoopCount);
 			runner.start();
 		});
+	};
+	#createChildrenInterval = (p: Particle, ms: number) => {
+		if (p._emittedChild || !(p.cfg.children?.length > 0)) return;
+		if (ms < Math.min(p.createdAt + p.lifetime, p.createdAt + p.cfg.childStartAfter)) return;
+		p._emittedChild = true;
+		const ref: { runner?: IntervalRunner } = { runner: null };
+		ref.runner = new IntervalRunner(() => this.#childEveryInterval(p, ref), p.cfg.childRunEvery, p.cfg.childRunEveryCount);
+		ref.runner.start();
 	};
 	#ticker = (time: PIXI.Ticker) => {
 		const ms = Date.now();

@@ -11,7 +11,7 @@ import {
 } from "./ParticleUtills";
 export interface TParticleCreationOptions {
 	position: Vector2;
-	container: Container
+	container: Container;
 }
 interface TParticle {
 	cfg: ParticleConfig;
@@ -83,7 +83,8 @@ class Particle {
 		// deltaY += parentPosition.y;
 
 		if (p._particleCreationOptions == null) {
-			const globalPosition = p.cfg.container.getGlobalPosition();
+			const _point = new Point();
+			const globalPosition = p.cfg.container.getGlobalPosition(_point, false);
 			globalPosition.x += deltaX;
 			globalPosition.y += deltaY;
 			p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
@@ -122,7 +123,9 @@ class Particle {
 		this.expiredAt = Date.now();
 		Particle.on.get(this.cfg.id).delete(this);
 		this.sprite.removeFromParent();
-		Particle.off.get(this.cfg.id).add(this);
+		requestAnimationFrame(() => {
+			Particle.off.get(this.cfg.id).add(this);
+		});
 	};
 	revive = () => {
 		Particle.off.get(this.cfg.id).delete(this);
