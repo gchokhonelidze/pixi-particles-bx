@@ -22,8 +22,8 @@ This package aims to simplify particle generation and usage in your pixi project
 - Angle over lifetime
 - Color over lifetime
 - Simulation (world or local)
-- Starting shape (point default, rectangle, circle)
-- Subemitter support (1 level only, but can hold multi children)
+- Starting shape (point default, rectangle, circle, convex polygons)
+- Subemitter support (parallel children, children can have own children)
 - Other features will come soon
 
 ## Deployment

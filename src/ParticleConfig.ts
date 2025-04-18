@@ -55,7 +55,7 @@ interface TParticleConfigArgs {
 	children?: TParticleConfigChild[];
 	zIndex?: number;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation" | "container"> {}
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "simulation" | "container"> {}
 class ParticleConfig {
 	id: string = null!;
 	zIndex: number;
@@ -99,7 +99,7 @@ class ParticleConfig {
 		this.blendMode = props.blendMode;
 		this.count = props.count;
 		this.lifetime = props.lifetime;
-		this.zIndex = props.zIndex  ?? 0;
+		this.zIndex = props.zIndex ?? 0;
 		this.directions = [];
 		if (props.direction == null) this.directions.push([0, 359]);
 		else if (typeof props.direction === "number") this.directions.push([props.direction, props.direction]);

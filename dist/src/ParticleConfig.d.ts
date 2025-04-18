@@ -46,7 +46,7 @@ interface TParticleConfigArgs {
     children?: TParticleConfigChild[];
     zIndex?: number;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation" | "container"> {
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "simulation" | "container"> {
 }
 declare class ParticleConfig {
     id: string;
