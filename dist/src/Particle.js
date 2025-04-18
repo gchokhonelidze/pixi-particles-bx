@@ -94,6 +94,7 @@ _Particle_onCreate = { value: (p) => {
             p.sprite.y = deltaY;
         }
         else {
+            p.cfg.container = p._particleCreationOptions.container;
             const globalPosition = p._particleCreationOptions.position;
             globalPosition.x += deltaX;
             globalPosition.y += deltaY;

@@ -92,22 +92,20 @@ class PixiParticles {
 			}
 		});
 	};
-	#createChildren = (p: Particle, particleCreationOptions: TParticleCreationOptions) => {
-		p.cfg.children.forEach((child) => {
-			child._resume();
-			this.#createParticles(child, particleCreationOptions);
-		});
-	};
 	#createChildrenInterval = (p: Particle, ms: number) => {
-		if (p._emittedChild || !(p.cfg.children?.length > 0) ) return;
+		if (p._emittedChild || !(p.cfg.children?.length > 0)) return;
 		if (ms < Math.min(p.createdAt + p.lifetime, p.createdAt + p.cfg.childStartAfter)) return;
 		p._emittedChild = true;
 		p._particleCreationOptions = null;
 		const particleCreationOptions: TParticleCreationOptions = {
 			position: Vector2.fromPoint(p.sprite.getGlobalPosition()),
+			container: p.cfg.container,
 		};
-		const runner = new IntervalRunner((i) => this.#createChildren(p, particleCreationOptions), p.cfg.children[0].duration, p.cfg.childLoopCount);
-		runner.start();
+		p.cfg.children.forEach((child) => {
+			child._resume();
+			const runner = new IntervalRunner((i) => this.#createParticles(child, particleCreationOptions), child.duration, p.cfg.childLoopCount);
+			runner.start();
+		});
 	};
 	#ticker = (time: PIXI.Ticker) => {
 		const ms = Date.now();

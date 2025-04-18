@@ -55,12 +55,12 @@ interface TParticleConfigArgs {
 	children?: TParticleConfigChild[];
 	zIndex?: number;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation"> {}
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation" | "container"> {}
 class ParticleConfig {
 	id: string = null!;
 	zIndex: number;
 	loop: boolean = true;
-	container: Container = null!;
+	container?: Container = null!;
 	duration: number = null!;
 	texture: Texture = null!;
 	blendMode?: BLEND_MODES;
@@ -92,7 +92,7 @@ class ParticleConfig {
 		this._createdAt = Date.now();
 		this.loop = "loop" in props ? props.loop : false;
 		this._running = props.running ?? true;
-		this.container = props.container;
+		this.container = "container" in props ? props.container : null;
 		this.shape = props.shape;
 		this.duration = props.duration;
 		this.texture = props.texture;

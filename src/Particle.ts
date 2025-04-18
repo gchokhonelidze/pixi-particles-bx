@@ -1,6 +1,6 @@
 import ParticleConfig, { IsTCircle, IsTShapeRectangle } from "./ParticleConfig";
 import Vector2, { IsVector2Array } from "./Vector2";
-import { Point, Sprite } from "pixi.js";
+import { Container, Point, Sprite } from "pixi.js";
 import {
 	arrayFirstOrDefault,
 	getRandomPointInCircle,
@@ -11,6 +11,7 @@ import {
 } from "./ParticleUtills";
 export interface TParticleCreationOptions {
 	position: Vector2;
+	container: Container
 }
 interface TParticle {
 	cfg: ParticleConfig;
@@ -89,6 +90,7 @@ class Particle {
 			p.sprite.x = deltaX;
 			p.sprite.y = deltaY;
 		} else {
+			p.cfg.container = p._particleCreationOptions.container;
 			const globalPosition = p._particleCreationOptions.position;
 			globalPosition.x += deltaX;
 			globalPosition.y += deltaY;

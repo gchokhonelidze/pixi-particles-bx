@@ -35,7 +35,7 @@ class ParticleConfig {
         this._createdAt = Date.now();
         this.loop = "loop" in props ? props.loop : false;
         this._running = (_a = props.running) !== null && _a !== void 0 ? _a : true;
-        this.container = props.container;
+        this.container = "container" in props ? props.container : null;
         this.shape = props.shape;
         this.duration = props.duration;
         this.texture = props.texture;

@@ -46,13 +46,13 @@ interface TParticleConfigArgs {
     children?: TParticleConfigChild[];
     zIndex?: number;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation"> {
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "childStartAfter" | "childLoopCount" | "children" | "loop" | "simulation" | "container"> {
 }
 declare class ParticleConfig {
     id: string;
     zIndex: number;
     loop: boolean;
-    container: Container;
+    container?: Container;
     duration: number;
     texture: Texture;
     blendMode?: BLEND_MODES;

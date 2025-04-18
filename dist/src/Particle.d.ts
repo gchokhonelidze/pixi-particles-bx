@@ -1,8 +1,9 @@
 import ParticleConfig from "./ParticleConfig";
 import Vector2 from "./Vector2";
-import { Sprite } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
 export interface TParticleCreationOptions {
     position: Vector2;
+    container: Container;
 }
 interface TParticle {
     cfg: ParticleConfig;
