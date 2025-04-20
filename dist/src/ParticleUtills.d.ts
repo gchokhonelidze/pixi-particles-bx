@@ -1,8 +1,10 @@
 import { Container } from "pixi.js";
 import Vector2 from "./Vector2";
 export declare const randomBetween: (min: number, max: number) => number;
+export declare const randomFloatBetween: (min: number, max: number, decimals?: number) => number;
 export declare const getGlobalRotation: (c: Container) => number;
 export declare const cssColorNames: Record<string, [number, number, number]>;
+export declare function movePreservingGlobal(container: Container, newParent: Container): void;
 export declare function rgbStringToRgb(c: string): [number, number, number];
 export declare function hex2rgb(hex: number): [number, number, number];
 export declare function rgb2hex([r, g, b]: [number, number, number]): number;

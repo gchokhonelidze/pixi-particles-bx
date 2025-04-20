@@ -1,6 +1,10 @@
+import Vector2, { IsVector2 } from "./Vector2";
 import { cssColorNames, hex2rgb, rgbStringToRgb, string2hex } from "./ParticleUtills";
+function IsMinMax(v) {
+    return typeof v === "object" && v != null && "from" in v && "to" in v;
+}
 function IsTMinMaxArray(v) {
-    return Array.isArray(v) && v.length > 0 && typeof v[0] === "object" && v[0] != null && "from" in v[0] && "to" in v[0];
+    return Array.isArray(v) && v.length > 0 && IsMinMax(v[0]);
 }
 export function IsTShapeRectangle(v) {
     return typeof v === "object" && v != null && "width" in v && "height" in v && "onlyEdges" in v;
@@ -10,7 +14,7 @@ export function IsTCircle(v) {
 }
 class ParticleConfig {
     constructor(props) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         this.id = null;
         this.loop = true;
         this.container = null;
@@ -63,15 +67,31 @@ class ParticleConfig {
             this.directions.push(...arr);
         }
         this.alphaOverLifetime = props.alphaOverLifetime;
-        this.size = props.size;
-        this.scaleOverLifetime = props.scaleOverLifetime;
+        if (typeof props.size === "number") {
+            this.size = Vector2.uniform(props.size);
+        }
+        else if (IsMinMax(props.size) && typeof props.size.from === "number") {
+            this.size = { from: Vector2.uniform(props.size.from), to: Vector2.uniform(props.size.to) };
+        }
+        else if (IsMinMax(props.size) && IsVector2(props.size.from)) {
+            this.size = props.size;
+        }
+        else if (IsVector2(props.size)) {
+            this.size = props.size;
+        }
+        this.scaleOverLifetime = (_c = props.scaleOverLifetime) === null || _c === void 0 ? void 0 : _c.map((el) => {
+            if (typeof el === "number")
+                return new Vector2(el, el);
+            else
+                return el;
+        });
         this.speed = props.speed;
         this.accelarationOverLifetime = props.accelarationOverLifetime;
         this.forceOverLifetime = props.forceOverLifetime;
-        this.rotateTowardsVelocity = (_c = props.rotateTowardsVelocity) !== null && _c !== void 0 ? _c : false;
-        this.spriteAngle = (_d = props.spriteAngle) !== null && _d !== void 0 ? _d : 0;
+        this.rotateTowardsVelocity = (_d = props.rotateTowardsVelocity) !== null && _d !== void 0 ? _d : false;
+        this.spriteAngle = (_e = props.spriteAngle) !== null && _e !== void 0 ? _e : 0;
         this.angleOverLifetime = props.angleOverLifetime;
-        this.colorOverLifetime = (_e = props.colorOverLifetime) === null || _e === void 0 ? void 0 : _e.map((c) => {
+        this.colorOverLifetime = (_f = props.colorOverLifetime) === null || _f === void 0 ? void 0 : _f.map((c) => {
             c = c.toLowerCase();
             if (c.startsWith("rgb"))
                 return rgbStringToRgb(c);
@@ -82,8 +102,8 @@ class ParticleConfig {
             else
                 throw new Error(`invalid color type: ${c}`);
         });
-        this.simulation = "simulation" in props ? (_f = props.simulation) !== null && _f !== void 0 ? _f : "world" : "world";
-        this.children = "children" in props ? (_g = props.children) === null || _g === void 0 ? void 0 : _g.map((el) => new ParticleConfig(el)) : null;
+        this.simulation = "simulation" in props ? (_g = props.simulation) !== null && _g !== void 0 ? _g : "world" : "world";
+        this.children = "children" in props ? (_h = props.children) === null || _h === void 0 ? void 0 : _h.map((el) => new ParticleConfig(el)) : null;
         this.childStartAfter = props.childStartAfter;
         this.childLoopCount = props.childLoopCount > 1 ? Math.ceil(props.childLoopCount) : 1;
         this.childRunEvery = props.childRunEvery > 0 ? Math.ceil(props.childRunEvery) : 0;

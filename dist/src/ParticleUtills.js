@@ -1,7 +1,12 @@
+import { Point } from "pixi.js";
 import Vector2 from "./Vector2";
 export const randomBetween = (min, max) => {
     // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
+};
+export const randomFloatBetween = (min, max, decimals = 2) => {
+    const num = Math.random() * (max - min) + min;
+    return Number(num.toFixed(Math.abs(Math.ceil(decimals))));
 };
 export const getGlobalRotation = (c) => {
     let _c = c;
@@ -162,6 +167,20 @@ export const cssColorNames = {
     yellow: [255, 255, 0],
     yellowgreen: [154, 205, 50],
 };
+export function movePreservingGlobal(container, newParent) {
+    // Step 1: Get the global position
+    const _point = new Point();
+    const globalPos = container.getGlobalPosition(_point, false);
+    // Step 2: Convert global to local of the new parent
+    const newLocalPos = newParent.toLocal(globalPos);
+    // Step 3: Remove from old parent (optional but usually clean)
+    if (container.parent)
+        container.parent.removeChild(container);
+    // Step 4: Add to new parent
+    newParent.addChild(container);
+    // Step 5: Set position to match original global position
+    container.position.set(newLocalPos.x, newLocalPos.y);
+}
 export function rgbStringToRgb(c) {
     const match = c.match(/rgba?\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(\d*\.?\d+))?\s*\)/i);
     if (!match)

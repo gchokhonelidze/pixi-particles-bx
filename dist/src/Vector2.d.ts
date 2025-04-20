@@ -20,6 +20,7 @@ declare class Vector2 {
     angle(): number;
     magnitude(): number;
     normalize(): Vector2;
+    static uniform(v: number): Vector2;
     static one(): Vector2;
     static zero(): Vector2;
     static right(): Vector2;

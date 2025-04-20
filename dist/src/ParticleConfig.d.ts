@@ -30,8 +30,8 @@ interface TParticleConfigArgs {
     running?: boolean;
     direction?: number | TMinMax<number> | Array<number> | Array<TMinMax<number>>;
     alphaOverLifetime?: Array<number>;
-    size?: Vector2 | TMinMax<Vector2>;
-    scaleOverLifetime?: Array<Vector2>;
+    size?: number | TMinMax<number> | Vector2 | TMinMax<Vector2>;
+    scaleOverLifetime?: Array<Vector2> | Array<number>;
     speed?: number;
     accelarationOverLifetime?: Array<number>;
     forceOverLifetime?: Array<Vector2>;
@@ -48,7 +48,7 @@ interface TParticleConfigArgs {
     children?: TParticleConfigChild[];
     zIndex?: number;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "simulation" | "container"> {
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container" | "simulation"> {
 }
 declare class ParticleConfig {
     id: string;

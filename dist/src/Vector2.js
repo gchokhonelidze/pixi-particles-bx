@@ -63,6 +63,9 @@ class Vector2 {
             return new Vector2(0, 0);
         return new Vector2(this.x / length, this.y / length);
     }
+    static uniform(v) {
+        return new Vector2(v, v);
+    }
     static one() {
         return new Vector2(1, 1);
     }
@@ -101,8 +104,8 @@ class Vector2 {
 Vector2.randomBetween = (min, max) => {
     // min and max included
     const r = Math.random();
-    const x = Math.floor(r * (max.x - min.x + 1) + min.x);
-    const y = Math.floor(r * (max.y - min.y + 1) + min.y);
+    const x = r * (max.x - min.x + 1) + min.x;
+    const y = r * (max.y - min.y + 1) + min.y;
     return new Vector2(x, y);
 };
 export default Vector2;

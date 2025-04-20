@@ -1,13 +1,16 @@
 import { BLEND_MODES, Container, Texture } from "pixi.js";
-import Vector2 from "./Vector2";
+import Vector2, { IsVector2 } from "./Vector2";
 import { cssColorNames, hex2rgb, rgbStringToRgb, string2hex } from "./ParticleUtills";
 
 export interface TMinMax<T> {
 	from: T;
 	to: T;
 }
+function IsMinMax<T>(v: unknown): v is TMinMax<T> {
+	return typeof v === "object" && v != null && "from" in v && "to" in v;
+}
 function IsTMinMaxArray<T>(v: unknown): v is Array<TMinMax<T>> {
-	return Array.isArray(v) && v.length > 0 && typeof v[0] === "object" && v[0] != null && "from" in v[0] && "to" in v[0];
+	return Array.isArray(v) && v.length > 0 && IsMinMax(v[0]);
 }
 export interface TShapeRectangle {
 	x: number;
@@ -39,8 +42,8 @@ interface TParticleConfigArgs {
 	running?: boolean;
 	direction?: number | TMinMax<number> | Array<number> | Array<TMinMax<number>>;
 	alphaOverLifetime?: Array<number>;
-	size?: Vector2 | TMinMax<Vector2>;
-	scaleOverLifetime?: Array<Vector2>;
+	size?: number | TMinMax<number> | Vector2 | TMinMax<Vector2>;
+	scaleOverLifetime?: Array<Vector2> | Array<number>;
 	speed?: number;
 	accelarationOverLifetime?: Array<number>;
 	forceOverLifetime?: Array<Vector2>;
@@ -57,7 +60,7 @@ interface TParticleConfigArgs {
 	children?: TParticleConfigChild[];
 	zIndex?: number;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "simulation" | "container"> {}
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container"| "simulation"> {}
 class ParticleConfig {
 	id: string = null!;
 	zIndex: number;
@@ -119,8 +122,19 @@ class ParticleConfig {
 			this.directions.push(...arr);
 		}
 		this.alphaOverLifetime = props.alphaOverLifetime;
-		this.size = props.size;
-		this.scaleOverLifetime = props.scaleOverLifetime;
+		if (typeof props.size === "number") {
+			this.size = Vector2.uniform(props.size);
+		} else if (IsMinMax<number>(props.size) && typeof props.size.from === "number") {
+			this.size = { from: Vector2.uniform(props.size.from), to: Vector2.uniform(props.size.to) } as TMinMax<Vector2>;
+		} else if (IsMinMax<Vector2>(props.size) && IsVector2(props.size.from)) {
+			this.size = props.size;
+		} else if (IsVector2(props.size)) {
+			this.size = props.size;
+		}
+		this.scaleOverLifetime = props.scaleOverLifetime?.map((el) => {
+			if (typeof el === "number") return new Vector2(el, el);
+			else return el;
+		});
 		this.speed = props.speed;
 		this.accelarationOverLifetime = props.accelarationOverLifetime;
 		this.forceOverLifetime = props.forceOverLifetime;
