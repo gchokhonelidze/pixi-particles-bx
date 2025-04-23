@@ -25,7 +25,7 @@ class Particle {
         this._emittedChild = false;
         this.retire = () => {
             this.expired = true;
-            this.expiredAt = Date.now();
+            this.expiredAt = performance.now();
             _a.on.get(this.cfg.id).delete(this);
             this.sprite.removeFromParent();
             requestAnimationFrame(() => {
@@ -120,7 +120,7 @@ _Particle_onCreate = { value: (p) => {
         p.sprite.zIndex = p.cfg.zIndex;
         p.cfg.container.addChild(p.sprite);
         p.expired = false;
-        p.createdAt = Date.now();
+        p.createdAt = performance.now();
         p.expiredAt = 0;
         p.lifetime = typeof p.cfg.lifetime === "number" ? p.cfg.lifetime : randomBetween(p.cfg.lifetime.from, p.cfg.lifetime.to);
     } };

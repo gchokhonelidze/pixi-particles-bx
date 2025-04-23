@@ -124,14 +124,8 @@ class PixiParticles {
             ref.runner = new IntervalRunner(() => __classPrivateFieldGet(this, _PixiParticles_childEveryInterval, "f").call(this, p, ref), p.cfg.childRunEvery, p.cfg.childRunEveryCount);
             ref.runner.start();
         });
-        this.lastTime = performance.now();
         _PixiParticles_ticker.set(this, (time) => {
-            const now = performance.now();
-            let deltaSeconds = (now - this.lastTime) / 20;
-            this.lastTime = now;
-            // Cap to avoid jump on tab restore / freeze
-            // deltaSeconds = Math.min(deltaSeconds, 50); // max 50ms
-            const ms = Date.now();
+            const ms = performance.now();
             for (const [cfgId, particleSet] of Particle.on)
                 for (const p of particleSet) {
                     if (p.expired)
@@ -163,8 +157,8 @@ class PixiParticles {
                     if (!isLocal)
                         p.sprite.rotation -= globalRotationAngle;
                     let position = isLocal ? new Vector2(p.sprite.position.x, p.sprite.position.y) : p.globalPosition;
-                    position.x += p.velocity.x * acceleration * deltaSeconds;
-                    position.y += p.velocity.y * acceleration * deltaSeconds;
+                    position.x += p.velocity.x * acceleration * time.deltaTime;
+                    position.y += p.velocity.y * acceleration * time.deltaTime;
                     const newPosition = isLocal ? position : p.cfg.container.toLocal(position);
                     p.sprite.position.set(newPosition.x, newPosition.y);
                     //create children:
@@ -185,6 +179,8 @@ _a = PixiParticles, _PixiParticles_particleCreateInterval = new WeakMap(), _Pixi
         return;
     // if (particleCreationOptions != null) particleCreationOptions.cfg.childLoopCount
     for (let i = 0; i < config.count; i++) {
+        if (particleCreationOptions != null)
+            console.log("count", config.count);
         Particle.take({ cfg: config, particleCreationOptions });
     }
 };

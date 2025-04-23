@@ -60,7 +60,7 @@ interface TParticleConfigArgs {
 	children?: TParticleConfigChild[];
 	zIndex?: number;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container"| "simulation"> {}
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container" | "simulation" | "duration"> {}
 class ParticleConfig {
 	id: string = null!;
 	zIndex: number;
@@ -77,7 +77,7 @@ class ParticleConfig {
 	speed?: number;
 	accelarationOverLifetime?: Array<number>;
 	forceOverLifetime?: Array<Vector2>;
-	cycleStartedAt: number = Date.now();
+	cycleStartedAt: number = performance.now();
 	rotateTowardsVelocity: boolean = false;
 	spriteAngle: number = 0;
 	angleOverLifetime?: Array<number>;
@@ -96,12 +96,12 @@ class ParticleConfig {
 	_createdAt: number;
 	constructor(props: TParticleConfigArgs | TParticleConfigChild) {
 		this.id = `cfg${(Math.random() + "").substring(2, 8)}`;
-		this._createdAt = Date.now();
+		this._createdAt = performance.now();
 		this.loop = "loop" in props ? props.loop : false;
 		this._running = props.running ?? true;
 		this.container = "container" in props ? props.container : null;
 		this.shape = props.shape;
-		this.duration = props.duration;
+		this.duration = "duration" in props ? props.duration : 0;
 		this.texture = props.texture;
 		this.blendMode = props.blendMode;
 		this.count = props.count;

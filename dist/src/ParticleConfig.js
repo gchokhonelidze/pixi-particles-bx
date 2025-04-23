@@ -21,7 +21,7 @@ class ParticleConfig {
         this.duration = null;
         this.texture = null;
         this.count = 0;
-        this.cycleStartedAt = Date.now();
+        this.cycleStartedAt = performance.now();
         this.rotateTowardsVelocity = false;
         this.spriteAngle = 0;
         this.simulation = "world";
@@ -38,12 +38,12 @@ class ParticleConfig {
             this._running = true;
         };
         this.id = `cfg${(Math.random() + "").substring(2, 8)}`;
-        this._createdAt = Date.now();
+        this._createdAt = performance.now();
         this.loop = "loop" in props ? props.loop : false;
         this._running = (_a = props.running) !== null && _a !== void 0 ? _a : true;
         this.container = "container" in props ? props.container : null;
         this.shape = props.shape;
-        this.duration = props.duration;
+        this.duration = "duration" in props ? props.duration : 0;
         this.texture = props.texture;
         this.blendMode = props.blendMode;
         this.count = props.count;
