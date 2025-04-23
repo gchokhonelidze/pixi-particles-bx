@@ -118,7 +118,15 @@ class PixiParticles {
 		ref.runner = new IntervalRunner(() => this.#childEveryInterval(p, ref), p.cfg.childRunEvery, p.cfg.childRunEveryCount);
 		ref.runner.start();
 	};
+
+	lastTime = performance.now();
 	#ticker = (time: PIXI.Ticker) => {
+		const now = performance.now();
+		let deltaSeconds = (now - this.lastTime) / 20;
+		this.lastTime = now;
+		// Cap to avoid jump on tab restore / freeze
+		// deltaSeconds = Math.min(deltaSeconds, 50); // max 50ms
+
 		const ms = Date.now();
 		for (const [cfgId, particleSet] of Particle.on)
 			for (const p of particleSet) {
@@ -146,8 +154,8 @@ class PixiParticles {
 				p.sprite.rotation = Vector2.toRadians(angleVelocity + p.cfg.spriteAngle + angleOverTime);
 				if (!isLocal) p.sprite.rotation -= globalRotationAngle;
 				let position = isLocal ? new Vector2(p.sprite.position.x, p.sprite.position.y) : p.globalPosition;
-				position.x += p.velocity.x * acceleration * time.deltaTime;
-				position.y += p.velocity.y * acceleration * time.deltaTime;
+				position.x += p.velocity.x * acceleration * deltaSeconds;
+				position.y += p.velocity.y * acceleration * deltaSeconds;
 				const newPosition = isLocal ? position : p.cfg.container.toLocal(position);
 				p.sprite.position.set(newPosition.x, newPosition.y);
 

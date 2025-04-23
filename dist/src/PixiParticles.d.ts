@@ -11,5 +11,6 @@ declare class PixiParticles {
     toggle: (configId: string) => ParticleConfig;
     isRunning: (configId: string) => boolean;
     destroy: (configId: string) => void;
+    lastTime: number;
 }
 export default PixiParticles;
