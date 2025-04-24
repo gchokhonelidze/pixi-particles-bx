@@ -67,7 +67,7 @@ interface TParticleConfigArgs {
 	zIndex?: number;
 	trail?: TTrailProps;
 }
-interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container" | "simulation" | "duration"> {}
+interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container" | "simulation"> {}
 class ParticleConfig {
 	id: string = null!;
 	zIndex: number;
