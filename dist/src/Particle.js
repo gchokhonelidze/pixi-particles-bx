@@ -6,11 +6,12 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _a, _Particle_onCreate;
 import { IsTCircle, IsTShapeRectangle } from "./ParticleConfig";
 import Vector2, { IsVector2Array } from "./Vector2";
-import { Point, Sprite } from "pixi.js";
-import { arrayFirstOrDefault, getRandomPointInCircle, getRandomPointInPolygon, getRandomPointOnCircumference, getRandomPointOnRectangleEdge, randomBetween, } from "./ParticleUtills";
+import { MeshRope, Point, Sprite } from "pixi.js";
+import { arrayFirstOrDefault, getRandomPointInCircle, getRandomPointInPolygon, getRandomPointOnCircumference, getRandomPointOnRectangleEdge, randomBetween, ToPixiColor, } from "./ParticleUtills";
 class Particle {
     //---
     constructor(props) {
+        var _b;
         this.id = null;
         this.cfg = null;
         this.velocity = Vector2.zero();
@@ -23,11 +24,14 @@ class Particle {
         this.size = Vector2.one();
         this.globalPosition = null;
         this._emittedChild = false;
+        this._meshrope = null;
         this.retire = () => {
+            var _b, _c;
             this.expired = true;
             this.expiredAt = performance.now();
             _a.on.get(this.cfg.id).delete(this);
-            this.sprite.removeFromParent();
+            (_b = this.sprite) === null || _b === void 0 ? void 0 : _b.removeFromParent();
+            (_c = this._meshrope) === null || _c === void 0 ? void 0 : _c.removeFromParent();
             requestAnimationFrame(() => {
                 _a.off.get(this.cfg.id).add(this);
             });
@@ -44,6 +48,15 @@ class Particle {
         sprite.anchor.set(0.5, 0.5);
         this.sprite = sprite;
         this._particleCreationOptions = props.particleCreationOptions;
+        if (props.cfg.trail != null) {
+            this._meshropePoints = Array.from({ length: 10 }, () => new Point(0, 0));
+            this._meshrope = new MeshRope({ texture: props.cfg.trail.texture, points: this._meshropePoints });
+            this._meshrope.blendMode = props.cfg.trail.blendMode;
+            if (props.cfg.trail.color != null)
+                this._meshrope.tint = ToPixiColor(props.cfg.trail.color);
+            this._meshrope.label = this.id;
+            this._meshrope.alpha = (_b = props.cfg.trail.alpha) !== null && _b !== void 0 ? _b : 1;
+        }
         __classPrivateFieldGet(_a, _a, "f", _Particle_onCreate).call(_a, this);
     }
 }
@@ -87,23 +100,25 @@ _Particle_onCreate = { value: (p) => {
         // const parentPosition = p._parent?.sprite.position ?? new Point(0, 0);
         // deltaX += parentPosition.x;
         // deltaY += parentPosition.y;
+        let globalPosition = Vector2.zero();
         if (p._particleCreationOptions == null) {
             const _point = new Point();
-            const globalPosition = p.cfg.container.getGlobalPosition(_point, false);
-            globalPosition.x += deltaX;
-            globalPosition.y += deltaY;
-            p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
-            p.sprite.x = deltaX;
-            p.sprite.y = deltaY;
+            globalPosition = Vector2.fromPoint(p.cfg.container.getGlobalPosition(_point, false));
         }
         else {
             p.cfg.container = p._particleCreationOptions.container;
-            const globalPosition = p._particleCreationOptions.position;
-            globalPosition.x += deltaX;
-            globalPosition.y += deltaY;
-            p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
-            p.sprite.x = deltaX;
-            p.sprite.y = deltaY;
+            globalPosition = p._particleCreationOptions.position;
+        }
+        globalPosition.x += deltaX;
+        globalPosition.y += deltaY;
+        p.globalPosition = new Vector2(globalPosition.x, globalPosition.y);
+        p.sprite.x = deltaX;
+        p.sprite.y = deltaY;
+        if (Array.isArray(p._meshropePoints)) {
+            p._meshropePoints.forEach((el, i) => {
+                el.x = p.sprite.x * 10;
+                el.y = p.sprite.y * 10;
+            });
         }
         const direction = p.cfg.directions[randomBetween(0, p.cfg.directions.length - 1)];
         p.velocity = Vector2.one()
@@ -119,6 +134,8 @@ _Particle_onCreate = { value: (p) => {
         }
         p.sprite.zIndex = p.cfg.zIndex;
         p.cfg.container.addChild(p.sprite);
+        if (p._meshrope != null)
+            p.cfg.container.addChild(p._meshrope);
         p.expired = false;
         p.createdAt = performance.now();
         p.expiredAt = 0;

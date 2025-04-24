@@ -1,6 +1,6 @@
 import ParticleConfig from "./ParticleConfig";
 import Vector2 from "./Vector2";
-import { Container, Sprite } from "pixi.js";
+import { Container, MeshRope, Point, Sprite } from "pixi.js";
 export interface TParticleCreationOptions {
     position: Vector2;
     container: Container;
@@ -24,6 +24,8 @@ declare class Particle {
     globalPosition: Vector2;
     _particleCreationOptions?: TParticleCreationOptions;
     _emittedChild: boolean;
+    _meshrope?: MeshRope;
+    _meshropePoints: Point[];
     static on: Map<string, Set<Particle>>;
     static off: Map<string, Set<Particle>>;
     constructor(props: TParticle);

@@ -201,6 +201,13 @@ export function rgb2hex([r, g, b]: [number, number, number]): number {
 export function string2hex(color: string): number {
 	return parseInt(color.replace("#", ""), 16);
 }
+export function ToPixiColor(c: string) {
+	c = c.toLowerCase();
+	if (c.startsWith("rgb")) return rgbStringToRgb(c);
+	else if (c.startsWith("#")) return hex2rgb(string2hex(c));
+	else if (cssColorNames[c] !== null) return cssColorNames[c];
+	else throw new Error(`invalid color type: ${c}`);
+}
 function _interpolateNumber(a: number, b: number, t: number): number {
 	return a * (1 - t) + b * t;
 }

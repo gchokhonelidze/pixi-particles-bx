@@ -161,6 +161,14 @@ class PixiParticles {
                     position.y += p.velocity.y * acceleration * time.deltaTime;
                     const newPosition = isLocal ? position : p.cfg.container.toLocal(position);
                     p.sprite.position.set(newPosition.x, newPosition.y);
+                    if (Array.isArray(p._meshropePoints)) {
+                        let from = Math.round(tweenProgress * p._meshropePoints.length);
+                        from = from > 0 ? from : 1;
+                        for (let i = from; i < p._meshropePoints.length; i++) {
+                            p._meshropePoints[i].x = p.sprite.position.x;
+                            p._meshropePoints[i].y = p.sprite.position.y;
+                        }
+                    }
                     //create children:
                     __classPrivateFieldGet(this, _PixiParticles_createChildrenInterval, "f").call(this, p, ms);
                 }
@@ -177,10 +185,7 @@ class PixiParticles {
 _a = PixiParticles, _PixiParticles_particleCreateInterval = new WeakMap(), _PixiParticles_app = new WeakMap(), _PixiParticles_onCreate = new WeakMap(), _PixiParticles_childEveryInterval = new WeakMap(), _PixiParticles_createChildrenInterval = new WeakMap(), _PixiParticles_ticker = new WeakMap(), _PixiParticles_instances = new WeakSet(), _PixiParticles_createParticles = function _PixiParticles_createParticles(config, particleCreationOptions) {
     if (!config._running)
         return;
-    // if (particleCreationOptions != null) particleCreationOptions.cfg.childLoopCount
     for (let i = 0; i < config.count; i++) {
-        if (particleCreationOptions != null)
-            console.log("count", config.count);
         Particle.take({ cfg: config, particleCreationOptions });
     }
 };

@@ -1,5 +1,6 @@
+import { Rectangle } from "pixi.js";
 import Vector2, { IsVector2 } from "./Vector2";
-import { cssColorNames, hex2rgb, rgbStringToRgb, string2hex } from "./ParticleUtills";
+import { ToPixiColor } from "./ParticleUtills";
 function IsMinMax(v) {
     return typeof v === "object" && v != null && "from" in v && "to" in v;
 }
@@ -42,12 +43,16 @@ class ParticleConfig {
         this.loop = "loop" in props ? props.loop : false;
         this._running = (_a = props.running) !== null && _a !== void 0 ? _a : true;
         this.container = "container" in props ? props.container : null;
+        if (this.container) {
+            this.container.boundsArea = new Rectangle(0, 0, 0, 0);
+        }
         this.shape = props.shape;
         this.duration = "duration" in props ? props.duration : 0;
         this.texture = props.texture;
         this.blendMode = props.blendMode;
         this.count = props.count;
         this.lifetime = props.lifetime;
+        this.trail = props.trail;
         this.zIndex = (_b = props.zIndex) !== null && _b !== void 0 ? _b : 0;
         this.directions = [];
         if (props.direction == null)
@@ -91,17 +96,7 @@ class ParticleConfig {
         this.rotateTowardsVelocity = (_d = props.rotateTowardsVelocity) !== null && _d !== void 0 ? _d : false;
         this.spriteAngle = (_e = props.spriteAngle) !== null && _e !== void 0 ? _e : 0;
         this.angleOverLifetime = props.angleOverLifetime;
-        this.colorOverLifetime = (_f = props.colorOverLifetime) === null || _f === void 0 ? void 0 : _f.map((c) => {
-            c = c.toLowerCase();
-            if (c.startsWith("rgb"))
-                return rgbStringToRgb(c);
-            else if (c.startsWith("#"))
-                return hex2rgb(string2hex(c));
-            else if (cssColorNames[c] !== null)
-                return cssColorNames[c];
-            else
-                throw new Error(`invalid color type: ${c}`);
-        });
+        this.colorOverLifetime = (_f = props.colorOverLifetime) === null || _f === void 0 ? void 0 : _f.map((c) => ToPixiColor(c));
         this.simulation = "simulation" in props ? (_g = props.simulation) !== null && _g !== void 0 ? _g : "world" : "world";
         this.children = "children" in props ? (_h = props.children) === null || _h === void 0 ? void 0 : _h.map((el) => new ParticleConfig(el)) : null;
         this.childStartAfter = props.childStartAfter;

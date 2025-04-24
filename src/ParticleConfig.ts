@@ -1,6 +1,6 @@
-import { BLEND_MODES, Container, Texture } from "pixi.js";
+import { BLEND_MODES, Container, Rectangle, Texture } from "pixi.js";
 import Vector2, { IsVector2 } from "./Vector2";
-import { cssColorNames, hex2rgb, rgbStringToRgb, string2hex } from "./ParticleUtills";
+import { cssColorNames, hex2rgb, rgbStringToRgb, string2hex, ToPixiColor } from "./ParticleUtills";
 
 export interface TMinMax<T> {
 	from: T;
@@ -31,6 +31,12 @@ export interface TCircle {
 export function IsTCircle(v: unknown): v is TCircle {
 	return typeof v === "object" && v != null && "cx" in v && "cy" in v && "radius" in v && "onlyCircumference" in v;
 }
+interface TTrailProps {
+	texture: Texture;
+	blendMode?: BLEND_MODES;
+	color?: string;
+	alpha?: number;
+}
 interface TParticleConfigArgs {
 	loop: boolean;
 	container: Container;
@@ -59,6 +65,7 @@ interface TParticleConfigArgs {
 	childRunEveryCount?: number;
 	children?: TParticleConfigChild[];
 	zIndex?: number;
+	trail?: TTrailProps;
 }
 interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container" | "simulation" | "duration"> {}
 class ParticleConfig {
@@ -85,6 +92,7 @@ class ParticleConfig {
 	directions: Array<[number, number]>;
 	simulation: "world" | "local" = "world";
 	shape?: TShapeRectangle | TCircle | Vector2[];
+	trail?: TTrailProps;
 	childStartAfter: number = 0;
 	childLoopCount: number = 1;
 	childRunEvery: number = 0;
@@ -100,12 +108,16 @@ class ParticleConfig {
 		this.loop = "loop" in props ? props.loop : false;
 		this._running = props.running ?? true;
 		this.container = "container" in props ? props.container : null;
+		if (this.container) {
+			this.container.boundsArea = new Rectangle(0, 0, 0, 0);
+		}
 		this.shape = props.shape;
 		this.duration = "duration" in props ? props.duration : 0;
 		this.texture = props.texture;
 		this.blendMode = props.blendMode;
 		this.count = props.count;
 		this.lifetime = props.lifetime;
+		this.trail = props.trail;
 		this.zIndex = props.zIndex ?? 0;
 		this.directions = [];
 		if (props.direction == null) this.directions.push([0, 359]);
@@ -141,13 +153,7 @@ class ParticleConfig {
 		this.rotateTowardsVelocity = props.rotateTowardsVelocity ?? false;
 		this.spriteAngle = props.spriteAngle ?? 0;
 		this.angleOverLifetime = props.angleOverLifetime;
-		this.colorOverLifetime = props.colorOverLifetime?.map((c) => {
-			c = c.toLowerCase();
-			if (c.startsWith("rgb")) return rgbStringToRgb(c);
-			else if (c.startsWith("#")) return hex2rgb(string2hex(c));
-			else if (cssColorNames[c] !== null) return cssColorNames[c];
-			else throw new Error(`invalid color type: ${c}`);
-		});
+		this.colorOverLifetime = props.colorOverLifetime?.map((c) => ToPixiColor(c));
 		this.simulation = "simulation" in props ? props.simulation ?? "world" : "world";
 		this.children = "children" in props ? props.children?.map((el) => new ParticleConfig(el)) : null;
 		this.childStartAfter = props.childStartAfter;

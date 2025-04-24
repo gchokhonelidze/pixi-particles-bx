@@ -19,6 +19,12 @@ export interface TCircle {
     onlyCircumference: boolean;
 }
 export declare function IsTCircle(v: unknown): v is TCircle;
+interface TTrailProps {
+    texture: Texture;
+    blendMode?: BLEND_MODES;
+    color?: string;
+    alpha?: number;
+}
 interface TParticleConfigArgs {
     loop: boolean;
     container: Container;
@@ -47,6 +53,7 @@ interface TParticleConfigArgs {
     childRunEveryCount?: number;
     children?: TParticleConfigChild[];
     zIndex?: number;
+    trail?: TTrailProps;
 }
 interface TParticleConfigChild extends Omit<TParticleConfigArgs, "loop" | "container" | "simulation" | "duration"> {
 }
@@ -74,6 +81,7 @@ declare class ParticleConfig {
     directions: Array<[number, number]>;
     simulation: "world" | "local";
     shape?: TShapeRectangle | TCircle | Vector2[];
+    trail?: TTrailProps;
     childStartAfter: number;
     childLoopCount: number;
     childRunEvery: number;

@@ -202,6 +202,17 @@ export function rgb2hex([r, g, b]) {
 export function string2hex(color) {
     return parseInt(color.replace("#", ""), 16);
 }
+export function ToPixiColor(c) {
+    c = c.toLowerCase();
+    if (c.startsWith("rgb"))
+        return rgbStringToRgb(c);
+    else if (c.startsWith("#"))
+        return hex2rgb(string2hex(c));
+    else if (cssColorNames[c] !== null)
+        return cssColorNames[c];
+    else
+        throw new Error(`invalid color type: ${c}`);
+}
 function _interpolateNumber(a, b, t) {
     return a * (1 - t) + b * t;
 }
